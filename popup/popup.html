@@ -1,0 +1,32 @@
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+	</head>
+
+	<body>
+		<form id="gridSettingsForm">
+			<label>Column Count <input type="number" min="1" max="24" id="ygcColumnCount" name="ygcColumnCount" /></label>
+			<label>Hide Rich Content <input type="checkbox" id="ygcHideRichContent" name="ygcHideRichContent" /></label>
+			<button type="submit">Save</button>
+		</form>
+
+		<script src="popup.js"></script>
+	</body>
+</html>
+
+<style>
+	body {
+		font-family: Arial, sans-serif;
+	}
+
+	#gridSettingsForm {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin-top: 20px;
+	}
+
+	#ygcColumnCount {
+		width: 50px;
+	}
+</style>
