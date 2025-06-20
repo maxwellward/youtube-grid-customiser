@@ -4,7 +4,7 @@ function saveOptions(e) {
 		ygcColumnCount: document.querySelector("#ygcColumnCount").value,
 		ygcHideRichContent: document.querySelector("#ygcHideRichContent").checked
 	});
-	window.close();
+	window.location.reload();
 }
 
 function restoreOptions() {
