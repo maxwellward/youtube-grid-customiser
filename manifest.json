@@ -3,7 +3,7 @@
 	"name": "Youtube Grid Customiser",
 	"version": "1.0",
 
-	"description": "Allows customising the number of rows shown on the YouTube homepage.",
+	"description": "Allows customising the number of columns shown on the YouTube homepage.",
 
 	"icons": {
 		"48": "icons/border-48.svg"

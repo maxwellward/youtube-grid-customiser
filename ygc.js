@@ -1,3 +1,4 @@
+// Wait for page to fully load before updating the grid layout
 function waitForElement(selector, timeout = 5000) {
 	return new Promise((resolve, reject) => {
 		const el = document.querySelector(selector);
@@ -20,48 +21,39 @@ function waitForElement(selector, timeout = 5000) {
 	});
 }
 
-const style = document.createElement('style');
-style.textContent = `
+// Remove rich sections that are already hidden and causing issues with the grid layout
+function hideInvisibleRichSections() {
+	document.querySelectorAll('ytd-rich-section-renderer').forEach((section) => {
+		const div = section.querySelector(':scope > div');
+		const shelf = div && div.querySelector(':scope > ytd-rich-shelf-renderer[hidden="true"]');
+		if (shelf) {
+			section.style.display = 'none';
+		}
+	});
+}
+
+const richSectionHider = document.createElement('style');
+richSectionHider.textContent = `
 	  ytd-rich-section-renderer {
 		display: none !important; /* Hide the rich section renderer */
 	  }
 	`;
 
-	function hideRichSectionsWithText() {
-		document.querySelectorAll('ytd-rich-section-renderer').forEach(section => {
-			const div = section.querySelector(':scope > div');
-			const shelf = div && div.querySelector(':scope > ytd-rich-shelf-renderer[hidden="true"]');
-			if (shelf) {
-				section.style.display = 'none';
-			}
-		});
-	}
-
-	// Initial hide
-	hideRichSectionsWithText();
-
-	// Observe for dynamically added sections
-	const sectionObserver = new MutationObserver(hideRichSectionsWithText);
-	sectionObserver.observe(document.body, { childList: true, subtree: true });
-
 waitForElement('ytd-rich-grid-renderer')
 	.then(async () => {
-		const getting = await browser.storage.sync.get('ygcColumnCount');
-
-		if (!getting.ygcColumnCount) {
-			browser.storage.sync.set({
-				ygcColumnCount: 6,
-			});
+		const settings = await browser.storage.sync.get({
+			ygcColumnCount: 6,
+			ygcHideRichContent: false
+		});
+		
+		if (settings.ygcHideRichContent || settings.ygcHideRichContent === undefined) {
+			document.head.appendChild(richSectionHider);
 		}
 
-		applyColumnCount(getting.ygcColumnCount || '6');
-
-		const getting2 = await browser.storage.sync.get('ygcHideRichContent');
-		if (getting2.ygcHideRichContent) {
-			document.head.appendChild(style);
-		}
+		applyColumnCount(settings.ygcColumnCount || '6');
 	})
 	.catch(console.warn);
+
 
 function applyColumnCount(columnCount) {
 	const el = document.getElementById('contents');
@@ -76,8 +68,16 @@ browser.storage.onChanged.addListener((changes, area) => {
 	}
 
 	if (changes.ygcHideRichContent.newValue === true) {
-		document.head.appendChild(style);
+		document.head.appendChild(richSectionHider);
 	} else {
-		document.head.removeChild(style);
+		document.head.removeChild(richSectionHider);
 	}
 });
+
+
+// Initial hide
+hideInvisibleRichSections();
+
+// Observe for dynamically added sections
+const sectionObserver = new MutationObserver(hideInvisibleRichSections);
+sectionObserver.observe(document.body, { childList: true, subtree: true });
