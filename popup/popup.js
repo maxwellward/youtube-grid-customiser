@@ -4,7 +4,7 @@ function saveOptions(e) {
 		ygcColumnCount: document.querySelector("#ygcColumnCount").value,
 		ygcHideRichContent: document.querySelector("#ygcHideRichContent").checked
 	});
-	window.location.reload();
+	window.close();
 }
 
 function restoreOptions() {
@@ -23,3 +23,8 @@ function restoreOptions() {
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.querySelector("form").addEventListener("submit", saveOptions);
+document.querySelector("#githubLink").addEventListener("click", function() {
+	setTimeout(() => {
+		window.close();
+	}, 1);
+});
